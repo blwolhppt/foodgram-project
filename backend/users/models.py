@@ -17,7 +17,5 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=LENGTH, blank=False,
                                  null=False, verbose_name="Фамилия")
 
-    REQUIRED_FIELDS = ['email', 'username', 'first_name', 'last_name']
-
     def __str__(self):
         return self.username
