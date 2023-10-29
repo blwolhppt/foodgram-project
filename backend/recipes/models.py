@@ -3,11 +3,14 @@ from django.db import models
 
 from users.models import User
 
+LENGTH = 200
+MIN_LENGTH = 10
+
 
 class Ingredient(models.Model):
-    name = models.CharField(max_length=200,
+    name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
-    measurement = models.CharField(max_length=10,
+    measurement = models.CharField(max_length=MIN_LENGTH,
                                    verbose_name='Граммовки')
 
     class Meta:
@@ -19,14 +22,13 @@ class Ingredient(models.Model):
 
 
 class Tag(models.Model):
-    name = models.CharField(max_length=200,
+    name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
 
-    color = models.CharField(max_length=10, verbose_name='Цвет')
-    slug = models.SlugField(verbose_name='Cлаг')
+    color = models.CharField(max_length=7, verbose_name='Цвет')
+    slug = models.SlugField(max_length=LENGTH, verbose_name='Cлаг')
 
     class Meta:
-        ordering = ['id']
         verbose_name = 'Теги'
 
     def __str__(self):
@@ -37,15 +39,14 @@ class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                verbose_name='Автор рецепта')
 
-    tags = models.ManyToManyField(Tag,
-                                  verbose_name='Тег')
+    tags = models.ManyToManyField(Tag, verbose_name='Тег')
     ingredients = models.ManyToManyField(Ingredient,
                                          verbose_name='Ингредиенты')
     image = models.ImageField(verbose_name='Картинка', upload_to='')
-    name = models.CharField(max_length=200,
+    name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
-    text = models.CharField(max_length=200, verbose_name='Описание')
-    cooking_time = models.IntegerField(default=10,
+    text = models.CharField(max_length=LENGTH, verbose_name='Описание')
+    cooking_time = models.IntegerField(default=MIN_LENGTH,
                                        validators=[MinValueValidator(1),
                                                    MaxValueValidator(100)],
                                        verbose_name='Время на рецепт')
@@ -59,3 +60,28 @@ class Recipe(models.Model):
     def __str__(self):
         return self.name
 
+
+class FavoriteRecipe(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             verbose_name='Автор рецепта')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               verbose_name='Рецепт')
+
+    class Meta:
+        verbose_name = 'Любимые реццепты'
+
+    def __str__(self):
+        return self.user, self.recipe
+
+
+class IngredientsInRecipe(models.Model):
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               verbose_name='Рецепт')
+    ingredients = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
+                                    verbose_name='Ингредиенты')
+
+    class Meta:
+        verbose_name = 'Список ингредиентов для рецепта'
+
+    def __str__(self):
+        return self.recipe, self.ingredients

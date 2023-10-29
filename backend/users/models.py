@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .validators import validate_username
+
 LENGTH = 150
 EMAIL_LENGTH = 254
 
@@ -9,7 +11,8 @@ class User(AbstractUser):
     email = models.EmailField(max_length=EMAIL_LENGTH, unique=True,
                               blank=False, null=False, verbose_name="Почта")
 
-    username = models.CharField(max_length=LENGTH, unique=True, blank=False,
+    username = models.CharField(validators=(validate_username,),
+                                max_length=LENGTH, unique=True, blank=False,
                                 null=False, verbose_name='Никнейм')
 
     first_name = models.CharField(max_length=LENGTH, blank=False,
