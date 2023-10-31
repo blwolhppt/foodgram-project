@@ -26,3 +26,15 @@ class User(AbstractUser):
 
     def __str__(self):
         return self.username
+
+
+class Follow(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             related_name='follower',
+                             verbose_name='Подписчик')
+    author = models.ForeignKey(User, on_delete=models.CASCADE,
+                               related_name='followed',
+                               verbose_name='Автор')
+
+    def __str__(self):
+        return f'{self.user}, {self.author}'

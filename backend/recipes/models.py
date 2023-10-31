@@ -71,7 +71,7 @@ class FavoriteRecipe(models.Model):
         verbose_name = 'Любимые реццепты'
 
     def __str__(self):
-        return self.user, self.recipe
+        return f'{self.user}, {self.recipe}'
 
 
 class IngredientsInRecipe(models.Model):
@@ -84,4 +84,4 @@ class IngredientsInRecipe(models.Model):
         verbose_name = 'Список ингредиентов для рецепта'
 
     def __str__(self):
-        return self.recipe, self.ingredients
+        return f'{self.recipe}, {self.ingredients}'
