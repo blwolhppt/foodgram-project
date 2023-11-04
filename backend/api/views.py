@@ -1,4 +1,7 @@
+from django.contrib.auth.tokens import default_token_generator
+from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from djoser.views import UserViewSet
 from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -6,12 +9,19 @@ from rest_framework.pagination import LimitOffsetPagination
 from api import serializers
 
 from recipes.models import Recipe, Tag, Ingredient, FavoriteRecipe
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+
+from api.permissions import OwnerOrReadOnly
+from rest_framework.views import APIView
+
+from users.models import User, Follow
 
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     serializer_class = serializers.RecipeSerializers
+    permission_classes = (OwnerOrReadOnly,)
     pagination_class = LimitOffsetPagination
     http_method_names = ['get', 'post', 'delete', 'patch']
 
@@ -50,3 +60,6 @@ class TagViewSet(viewsets.ModelViewSet):
     queryset = Tag.objects.all()
     serializer_class = serializers.TagSerializer
     pagination_class = None
+
+
+

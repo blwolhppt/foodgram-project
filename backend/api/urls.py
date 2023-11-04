@@ -4,10 +4,10 @@ from api import views
 
 router = SimpleRouter()
 
-router.register('recipe', views.RecipeViewSet)
-router.register('ingredient', views.IngredientViewSet)
-router.register('tag', views.TagViewSet)
-# router.register('user', views.UserViewSet)
+router.register('recipes', views.RecipeViewSet)
+router.register('ingredients', views.IngredientViewSet)
+router.register('tags', views.TagViewSet)
+router.register('users', views.CustomUserViewSet)
 
 
 urlpatterns = [

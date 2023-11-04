@@ -21,8 +21,10 @@ class User(AbstractUser):
     last_name = models.CharField(max_length=LENGTH, blank=False,
                                  null=False, verbose_name="Фамилия")
 
-    USERNAME_FIELD = 'username'
-    EMAIL_FIELD = ['email', ]
+    password = models.CharField(max_length=LENGTH, verbose_name="Пароль")
+
+    USERNAME_FIELD = 'email'
+    REQUIRED_FIELDS = ('username', 'first_name', 'last_name')
 
     def __str__(self):
         return self.username
@@ -30,11 +32,11 @@ class User(AbstractUser):
 
 class Follow(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE,
-                             related_name='follower',
-                             verbose_name='Подписчик')
+                             related_name="follower",
+                             verbose_name="Подписчик")
     author = models.ForeignKey(User, on_delete=models.CASCADE,
-                               related_name='followed',
-                               verbose_name='Автор')
+                               related_name="followed",
+                               verbose_name="Автор")
 
     def __str__(self):
         return f'{self.user}, {self.author}'
