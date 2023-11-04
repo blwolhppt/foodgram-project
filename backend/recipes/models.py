@@ -42,7 +42,8 @@ class Recipe(models.Model):
     tags = models.ManyToManyField(Tag, verbose_name='Тег')
     ingredients = models.ManyToManyField(Ingredient,
                                          verbose_name='Ингредиенты')
-    image = models.ImageField(verbose_name='Картинка', upload_to='')
+    image = models.ImageField(verbose_name='Картинка',
+                              upload_to='recipes/photo')
     name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
     text = models.CharField(max_length=LENGTH, verbose_name='Описание')
@@ -79,9 +80,10 @@ class IngredientsInRecipe(models.Model):
                                verbose_name='Рецепт')
     ingredients = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
                                     verbose_name='Ингредиенты')
+    amount = models.IntegerField(default=1, verbose_name='Количество')
 
     class Meta:
         verbose_name = 'Список ингредиентов для рецепта'
 
     def __str__(self):
-        return f'{self.recipe}, {self.ingredients}'
+        return f'{self.recipe}, {self.ingredients}, {self.amount}'
