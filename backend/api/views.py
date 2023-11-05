@@ -1,9 +1,11 @@
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail
 from django.shortcuts import get_object_or_404
+from django_filters.rest_framework import DjangoFilterBackend
 from djoser.views import UserViewSet
-from rest_framework import viewsets, status
+from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
+from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
 
 from api import serializers
@@ -50,10 +52,21 @@ class RecipeViewSet(viewsets.ModelViewSet):
             return self.delete_favorite(FavoriteRecipe, request)
 
 
-class IngredientViewSet(viewsets.ModelViewSet):
+class IngredientViewSet(viewsets.ReadOnlyModelViewSet):
     queryset = Ingredient.objects.all()
     serializer_class = serializers.IngredientSerializer
     pagination_class = None
+
+    filter_backends = [filters.SearchFilter]
+    search_fields = ['name']
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        ingredient_name = self.request.query_params.get('name', None)
+
+        if ingredient_name:
+            queryset = queryset.filter(name__startswith=ingredient_name)
+        return queryset
 
 
 class TagViewSet(viewsets.ReadOnlyModelViewSet):

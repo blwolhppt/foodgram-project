@@ -10,7 +10,7 @@ MIN_LENGTH = 10
 class Ingredient(models.Model):
     name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
-    measurement = models.CharField(max_length=MIN_LENGTH,
+    measurement_unit = models.CharField(max_length=MIN_LENGTH,
                                    verbose_name='Граммовки')
 
     class Meta:
