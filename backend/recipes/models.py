@@ -11,7 +11,7 @@ class Ingredient(models.Model):
     name = models.CharField(max_length=LENGTH,
                             verbose_name='Название')
     measurement_unit = models.CharField(max_length=MIN_LENGTH,
-                                   verbose_name='Граммовки')
+                                        verbose_name='Граммовки')
 
     class Meta:
         ordering = ['name']
@@ -25,7 +25,7 @@ class Tag(models.Model):
     name = models.CharField(max_length=LENGTH,
                             verbose_name='Название', unique=True)
 
-    color = models.CharField(max_length=7, verbose_name='Цвет', unique=True,)
+    color = models.CharField(max_length=7, verbose_name='Цвет', unique=True, )
     slug = models.SlugField(max_length=LENGTH,
                             verbose_name='Cлаг', unique=True)
 
@@ -39,9 +39,9 @@ class Tag(models.Model):
 class Recipe(models.Model):
     author = models.ForeignKey(User, on_delete=models.CASCADE,
                                verbose_name='Автор рецепта')
-
     tags = models.ManyToManyField(Tag, verbose_name='Тег')
     ingredients = models.ManyToManyField(Ingredient,
+                                         through='IngredientsInRecipe',
                                          verbose_name='Ингредиенты')
     image = models.ImageField(verbose_name='Картинка',
                               upload_to='recipes/photo')
