@@ -18,14 +18,14 @@ class Ingredient(models.Model):
         verbose_name = 'Ингредиенты'
 
     def __str__(self):
-        return self.name
+        return f'{self.name}, {self.measurement_unit}'
 
 
 class Tag(models.Model):
     name = models.CharField(max_length=LENGTH,
                             verbose_name='Название', unique=True)
 
-    color = models.CharField(max_length=7, verbose_name='Цвет', unique=True, )
+    color = models.CharField(max_length=7, verbose_name='Цвет', unique=True)
     slug = models.SlugField(max_length=LENGTH,
                             verbose_name='Cлаг', unique=True)
 
@@ -88,3 +88,16 @@ class IngredientsInRecipe(models.Model):
 
     def __str__(self):
         return f'{self.recipe}, {self.ingredients}, {self.amount}'
+
+
+class ListProducts(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE,
+                             verbose_name='Юзер')
+    recipe = models.ForeignKey(Recipe, on_delete=models.CASCADE,
+                               verbose_name='Рецепт')
+
+    class Meta:
+        verbose_name = 'Список покупок'
+
+    def __str__(self):
+        return f'{self.user}, {self.recipe}'
