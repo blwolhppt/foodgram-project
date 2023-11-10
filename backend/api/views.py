@@ -190,8 +190,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     def download_shopping_cart(self, request):
         ingredients = Recipe.objects.filter(
             listproducts__user=request.user).values(
-            'ingredients__name', 'ingredients__measurement_unit').order_by(
-            'ingredients__name')
+            'ingredients__name', 'ingredients__measurement_unit')
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = \
@@ -199,13 +198,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         pdf = canvas.Canvas(response)
 
-        pdf.drawString(100, 800, 'Что купить:')
+        pdf.drawString('Что купить:')
 
         y_position = 780
 
-        for ingredient in ingredients:
-            ingredient_text = f'{ingredient["ingredients__name"]} ' \
-                            f'({ingredient["ingredients__measurement_unit"]})'
+        for ing in ingredients:
+            ingredient_text = f'{ing["ingredients__name"]} ' \
+                              f'({ing["ingredients__measurement_unit" ]})'
             pdf.drawString(100, y_position, ingredient_text.encode(
                 'utf-8').decode('latin-1'))
             y_position -= 20
