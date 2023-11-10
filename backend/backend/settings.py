@@ -1,14 +1,15 @@
+import os
 from pathlib import Path
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
-SECRET_KEY = 'django-insecure-)arntza!$td2%i0!oh&rb3+' \
-             '2jr&kra833382bj!ck4b83nkz#^'
+SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
 
-DEBUG = True
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', default='127.0.0.1, '
+                                                   'localhost').split(',')
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
@@ -85,7 +86,7 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'ru'
 
 TIME_ZONE = 'UTC'
 

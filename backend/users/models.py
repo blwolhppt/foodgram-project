@@ -1,10 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from .constants import EMAIL_LENGTH, LENGTH
 from .validators import validate_username
-
-LENGTH = 150
-EMAIL_LENGTH = 254
 
 
 class User(AbstractUser):

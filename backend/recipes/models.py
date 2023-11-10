@@ -3,8 +3,7 @@ from django.db import models
 
 from users.models import User
 
-LENGTH = 200
-MIN_LENGTH = 10
+from .constants import LENGTH, MIN_LENGTH
 
 
 class Ingredient(models.Model):
