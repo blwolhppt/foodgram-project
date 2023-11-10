@@ -218,16 +218,16 @@ class FollowSerializer(UserSerializer):
     def get_recipes(self, data):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=data.author)[:int(limit)] \
-            if limit else Recipe.objects.filter(author=data.author)
+        queryset = (Recipe.objects.filter(author=data.author)[:int(limit)]
+                    if limit else Recipe.objects.filter(author=data.author))
         recipes = RecipeFollowSerializer(queryset, many=True).data
         return recipes
 
     def get_recipes_count(self, data):
         request = self.context.get('request')
         limit = request.GET.get('recipes_limit')
-        queryset = Recipe.objects.filter(author=data.author)[:int(limit)] \
-            if limit else Recipe.objects.filter(author=data.author)
+        queryset = (Recipe.objects.filter(author=data.author)[:int(limit)]
+                    if limit else Recipe.objects.filter(author=data.author))
         return len(queryset)
 
     def to_representation(self, instance):
