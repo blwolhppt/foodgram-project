@@ -70,7 +70,7 @@ class FavoriteRecipe(models.Model):
                                verbose_name='Рецепт')
 
     class Meta:
-        verbose_name = 'Любимые реццепты'
+        verbose_name = 'Любимые рецепты'
 
     def __str__(self):
         return f'{self.user}, {self.recipe}'

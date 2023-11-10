@@ -8,6 +8,7 @@ router.register('recipes', views.RecipeViewSet)
 router.register('ingredients', views.IngredientViewSet)
 router.register('tags', views.TagViewSet)
 router.register('users', views.CustomUserViewSet)
+# router.register(r'users/(?P<user_id>\d+)/subscribe', views.CustomUserViewSet)
 
 
 urlpatterns = [
