@@ -16,6 +16,8 @@ from users.models import User, Follow
 
 from users.serializers import CustomUserSerializer
 
+from .constants import MIN_TIME, MAX_TIME
+
 
 class TagSerializer(serializers.ModelSerializer):
     class Meta:
@@ -55,6 +57,9 @@ class RecipeSerializer(serializers.ModelSerializer):
     image = Base64ImageField()
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
+    cooking_time = serializers.IntegerField(
+        validators=[MinValueValidator(MIN_TIME),
+                    MaxValueValidator(MAX_TIME)])
 
     class Meta:
         model = Recipe
