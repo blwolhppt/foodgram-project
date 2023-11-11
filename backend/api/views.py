@@ -1,12 +1,11 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
-from djoser.views import UserViewSet
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
 
@@ -15,68 +14,6 @@ from api import serializers
 from api.filters import RecipeFilter
 from recipes.models import (Recipe, Tag, Ingredient, FavoriteRecipe,
                             ListProducts)
-from users.models import User, Follow
-
-
-class CustomUserViewSet(UserViewSet):
-    queryset = User.objects.all()
-    serializer_class = serializers.CustomUserSerializer
-    pagination_class = LimitOffsetPagination
-
-    http_method_names = ['get', 'post', 'delete', 'patch']
-
-    def get_permissions(self):
-        if self.action == 'list':
-            return [AllowAny()]
-        return super().get_permissions()
-
-    @action(
-        detail=True,
-        methods=('POST', 'DELETE',),
-        permission_classes=(IsAuthenticated,)
-    )
-    def subscribe(self, request, **kwargs):
-        user = request.user
-        author = get_object_or_404(User, id=kwargs.get('id'))
-        if request.method == 'POST':
-            return self.subscribe_to_author(user, author)
-        if request.method == 'DELETE':
-            return self.unsubscribe_to_author(user, author)
-
-    def subscribe_to_author(self, user, author):
-        if user == author or Follow.objects.filter(
-                user=user, author=author).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
-
-        serializer = serializers.FollowSerializer(Follow.objects.create(
-            user=user, author=author), context={'request': self.request})
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    def unsubscribe_to_author(self, user, author):
-        if Follow.objects.filter(user=user, author=author).exists():
-            Follow.objects.filter(user=user, author=author).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
-
-        return Response(status=status.HTTP_400_BAD_REQUEST)
-
-    @action(
-        detail=False,
-        permission_classes=(IsAuthenticated,)
-    )
-    def subscriptions(self, request):
-        subs = self.paginate_queryset(Follow.objects.filter(user=request.user))
-        serializer = serializers.FollowSerializer(subs, many=True,
-                                                  context={'request': request})
-        return self.get_paginated_response(serializer.data)
-
-    @action(
-        detail=False,
-        methods=('GET',),
-        permission_classes=(IsAuthenticated,))
-    def me(self, request):
-        serializer = serializers.CustomUserSerializer(
-            request.user, context={"request": request})
-        return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 class IngredientViewSet(viewsets.ReadOnlyModelViewSet):

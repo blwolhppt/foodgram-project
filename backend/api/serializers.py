@@ -2,52 +2,19 @@ import base64
 
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator
-from djoser.serializers import UserCreateSerializer, UserSerializer
+from djoser.serializers import UserSerializer
 
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (SerializerMethodField, IntegerField,
                                    ImageField, ReadOnlyField)
 from rest_framework.relations import PrimaryKeyRelatedField
-from rest_framework.validators import UniqueValidator
 
 from recipes.models import (Ingredient, Tag, Recipe, IngredientsInRecipe,
                             FavoriteRecipe, ListProducts)
 from users.models import User, Follow
-from users.validators import validate_username
 
-from .constants import USERNAME_LENGTH, EMAIL_LENGTH
-
-
-class CustomUserCreateSerializer(UserCreateSerializer):
-    username = serializers.CharField(
-        max_length=USERNAME_LENGTH, required=True,
-        validators=[validate_username,
-                    UniqueValidator(queryset=User.objects.all())])
-
-    email = serializers.EmailField(max_length=EMAIL_LENGTH, required=True,
-                                   validators=[UniqueValidator])
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username', 'first_name',
-                  'last_name', 'password')
-
-
-class CustomUserSerializer(UserSerializer):
-    is_subscribed = serializers.SerializerMethodField(read_only=True)
-
-    class Meta:
-        model = User
-        fields = ('id', 'email', 'username', 'first_name',
-                  'last_name', 'is_subscribed')
-
-    def get_is_subscribed(self, author):
-        request = self.context.get('request')
-        if request.user and request.user.is_authenticated:
-            return Follow.objects.filter(user=request.user,
-                                         author=author).exists()
-        return False
+from users.serializers import CustomUserSerializer
 
 
 class TagSerializer(serializers.ModelSerializer):

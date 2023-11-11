@@ -3,12 +3,14 @@ from rest_framework.routers import SimpleRouter
 
 from api import views
 
+from users.views import CustomUserViewSet
+
 router = SimpleRouter()
 
 router.register('recipes', views.RecipeViewSet)
 router.register('ingredients', views.IngredientViewSet)
 router.register('tags', views.TagViewSet)
-router.register('users', views.CustomUserViewSet)
+router.register('users', CustomUserViewSet)
 
 
 urlpatterns = [

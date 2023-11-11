@@ -3,7 +3,7 @@ from django.db import models
 
 from users.models import User
 
-from .constants import LENGTH, MIN_LENGTH
+from .constants import LENGTH, MIN_LENGTH, MIN_TIME, MAX_TIME
 
 
 class Ingredient(models.Model):
@@ -15,6 +15,10 @@ class Ingredient(models.Model):
     class Meta:
         ordering = ['name']
         verbose_name = 'Ингредиенты'
+        constraints = [
+            models.UniqueConstraint(fields=['name', 'measurement_unit'],
+                                    name='unique_name_measurement_unit')
+        ]
 
     def __str__(self):
         return f'{self.name}, {self.measurement_unit}'
@@ -48,8 +52,9 @@ class Recipe(models.Model):
                             verbose_name='Название')
     text = models.CharField(max_length=LENGTH, verbose_name='Описание')
     cooking_time = models.IntegerField(default=MIN_LENGTH,
-                                       validators=[MinValueValidator(1),
-                                                   MaxValueValidator(100)],
+                                       validators=[MinValueValidator(MIN_TIME),
+                                                   MaxValueValidator(MAX_TIME)
+                                                   ],
                                        verbose_name='Время на рецепт')
 
     pub_date = models.DateTimeField(verbose_name='Дата', auto_now_add=True)
