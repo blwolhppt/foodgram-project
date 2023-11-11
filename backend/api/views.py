@@ -6,7 +6,7 @@ from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter
 from rest_framework.pagination import LimitOffsetPagination
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAuthenticated, AllowAny
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
 
@@ -27,7 +27,7 @@ class CustomUserViewSet(UserViewSet):
 
     def get_permissions(self):
         if self.action == 'list':
-            return [permissions.AllowAny()]
+            return [AllowAny()]
         return super().get_permissions()
 
     @action(
@@ -104,7 +104,7 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
     pagination_class = LimitOffsetPagination
-    permission_classes = (permissions.IsAuthenticatedOrReadOnly,)
+    permission_classes = (permissions.IsAuthenticatedAuthorOrReadOnly,)
     filter_backends = [SearchFilter, DjangoFilterBackend]
     filterset_class = RecipeFilter
     search_fields = ['name', 'ingredients__name', 'tags__name']

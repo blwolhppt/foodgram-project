@@ -1,26 +1,31 @@
 import base64
+
 from django.core.files.base import ContentFile
+from django.core.validators import MinValueValidator, MaxValueValidator
+from djoser.serializers import UserCreateSerializer, UserSerializer
+
 from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (SerializerMethodField, IntegerField,
                                    ImageField, ReadOnlyField)
 from rest_framework.relations import PrimaryKeyRelatedField
 from rest_framework.validators import UniqueValidator
-from djoser.serializers import UserCreateSerializer, UserSerializer
 
 from recipes.models import (Ingredient, Tag, Recipe, IngredientsInRecipe,
                             FavoriteRecipe, ListProducts)
 from users.models import User, Follow
 from users.validators import validate_username
 
+from .constants import USERNAME_LENGTH, EMAIL_LENGTH
+
 
 class CustomUserCreateSerializer(UserCreateSerializer):
     username = serializers.CharField(
-        max_length=150, required=True,
+        max_length=USERNAME_LENGTH, required=True,
         validators=[validate_username,
                     UniqueValidator(queryset=User.objects.all())])
 
-    email = serializers.EmailField(max_length=254, required=True,
+    email = serializers.EmailField(max_length=EMAIL_LENGTH, required=True,
                                    validators=[UniqueValidator])
 
     class Meta:
@@ -39,7 +44,7 @@ class CustomUserSerializer(UserSerializer):
 
     def get_is_subscribed(self, author):
         request = self.context.get('request')
-        if request and request.user and request.user.is_authenticated:
+        if request.user and request.user.is_authenticated:
             return Follow.objects.filter(user=request.user,
                                          author=author).exists()
         return False
@@ -59,7 +64,8 @@ class IngredientSerializer(serializers.ModelSerializer):
 
 class IngredientsInRecipeSerializer(serializers.ModelSerializer):
     id = IntegerField(write_only=True)
-    amount = IntegerField()
+    amount = IntegerField(validators=[MinValueValidator(1),
+                                      MaxValueValidator(50)])
 
     class Meta:
         model = IngredientsInRecipe
@@ -143,7 +149,7 @@ class NewRecipeSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             if ingredient_id not in list_id_ingredients:
                 raise ValidationError('Такого ингредиента нет!')
-            if amount == 0:
+            if amount < 1:
                 raise ValidationError('Кол-во ингредиента не может быть 0!')
             if ingredient in list_ingredients:
                 raise ValidationError('Такой ингредиент уже есть!')
