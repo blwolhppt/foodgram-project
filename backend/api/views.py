@@ -112,7 +112,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = (Recipe.objects.filter(
             listproducts__user=request.user).values(
             'ingredients__name', 'ingredients__measurement_unit')
-                       .order_by("ingredient__name"))
+            .order_by("ingredient__name"))
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; filename="'
