@@ -2,7 +2,6 @@ from django.urls import path, include
 from rest_framework.routers import SimpleRouter
 
 from api import views
-
 from users.views import CustomUserViewSet
 
 router = SimpleRouter()

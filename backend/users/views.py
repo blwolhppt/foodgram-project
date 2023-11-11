@@ -37,10 +37,9 @@ class CustomUserViewSet(UserViewSet):
             return self.unsubscribe_to_author(user, author)
 
     def subscribe_to_author(self, user, author):
-        if user == author or Follow.objects.filter(
-                user=user, author=author).exists():
+        if user == author or Follow.objects.filter(user=user,
+                                                   author=author).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
-
         serializer = serializers.FollowSerializer(Follow.objects.create(
             user=user, author=author), context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
