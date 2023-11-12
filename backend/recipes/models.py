@@ -3,7 +3,8 @@ from django.db import models
 
 from users.models import User
 
-from .constants import LENGTH, MIN_LENGTH, MIN_TIME, MAX_TIME
+from .constants import (LENGTH, MIN_LENGTH, MIN_COOKING_TIME,
+                        MAX_COOKING_TIME, DEFAULT_AMOUNT)
 
 
 class Ingredient(models.Model):
@@ -52,9 +53,10 @@ class Recipe(models.Model):
                             verbose_name='Название')
     text = models.CharField(max_length=LENGTH, verbose_name='Описание')
     cooking_time = models.IntegerField(default=MIN_LENGTH,
-                                       validators=[MinValueValidator(MIN_TIME),
-                                                   MaxValueValidator(MAX_TIME)
-                                                   ],
+                                       validators=[
+                                           MinValueValidator(MIN_COOKING_TIME),
+                                           MaxValueValidator(MAX_COOKING_TIME)
+                                       ],
                                        verbose_name='Время на рецепт')
 
     pub_date = models.DateTimeField(verbose_name='Дата', auto_now_add=True)
@@ -85,7 +87,8 @@ class IngredientsInRecipe(models.Model):
                                verbose_name='Рецепт')
     ingredients = models.ForeignKey(Ingredient, on_delete=models.CASCADE,
                                     verbose_name='Ингредиенты')
-    amount = models.IntegerField(default=1, verbose_name='Количество')
+    amount = models.IntegerField(default=DEFAULT_AMOUNT,
+                                 verbose_name='Количество')
 
     class Meta:
         verbose_name = 'Список ингредиентов для рецепта'

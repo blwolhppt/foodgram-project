@@ -6,11 +6,9 @@ from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-
 from reportlab.pdfgen import canvas
 
-from api import permissions
-from api import serializers
+from api import permissions, serializers
 from api.filters import RecipeFilter
 from recipes.models import (Recipe, Tag, Ingredient, FavoriteRecipe,
                             ListProducts)
@@ -64,9 +62,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @favorite.mapping.delete
     def delete_favorite(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
-        if get_object_or_404(FavoriteRecipe, user=request.user,
-                             recipe=recipe).delete():
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        get_object_or_404(FavoriteRecipe, user=request.user,
+                          recipe=recipe).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def add_favorite(self, request, pk):
         if (not Recipe.objects.filter(id=pk).exists()
@@ -99,9 +97,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
     @shopping_cart.mapping.delete
     def delete_shopping_cart(self, request, pk):
         recipe = get_object_or_404(Recipe, id=pk)
-        if get_object_or_404(ListProducts, user=request.user,
-                             recipe=recipe).delete():
-            return Response(status=status.HTTP_204_NO_CONTENT)
+        get_object_or_404(ListProducts, user=request.user,
+                          recipe=recipe).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     @action(
         detail=False,

@@ -14,7 +14,8 @@ from recipes.models import (Ingredient, Tag, Recipe, IngredientsInRecipe,
 from users.models import Follow
 from users.serializers import CustomUserSerializer
 
-from .constants import MIN_TIME, MAX_TIME
+from recipes.constants import (MIN_AMMOUNT_INGREDIENTS, MIN_COOKING_TIME,
+                               MAX_COOKING_TIME)
 
 
 class TagSerializer(serializers.ModelSerializer):
@@ -56,8 +57,8 @@ class RecipeSerializer(serializers.ModelSerializer):
     is_favorited = SerializerMethodField()
     is_in_shopping_cart = SerializerMethodField()
     cooking_time = serializers.IntegerField(
-        validators=[MinValueValidator(MIN_TIME),
-                    MaxValueValidator(MAX_TIME)])
+        validators=[MinValueValidator(MIN_COOKING_TIME),
+                    MaxValueValidator(MAX_COOKING_TIME)])
 
     class Meta:
         model = Recipe
@@ -119,8 +120,9 @@ class NewRecipeSerializer(serializers.ModelSerializer):
             amount = ingredient.get('amount')
             if ingredient_id not in list_id_ingredients:
                 raise ValidationError('Такого ингредиента нет!')
-            if amount < 1:
-                raise ValidationError('Кол-во ингредиента не может быть 0!')
+            if amount < MIN_AMMOUNT_INGREDIENTS:
+                raise ValidationError(f'Кол-во ингредиента не может быть '
+                                      f'меньше {MIN_AMMOUNT_INGREDIENTS}!')
             if ingredient in list_ingredients:
                 raise ValidationError('Такой ингредиент уже есть!')
             list_ingredients.append(ingredient)
