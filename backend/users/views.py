@@ -32,15 +32,20 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, **kwargs):
         user = request.user
         author = get_object_or_404(User, id=kwargs.get('id'))
-        serializer = serializers.FollowSerializer(Follow.objects.create(
-            user=user, author=author), context={'request': self.request})
+        follow_instance = Follow(user=user, author=author)
+        serializer = serializers.FollowSerializer(instance=follow_instance,
+                                                  data=request.data,
+                                                  context={
+                                                      "request": request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        Follow.objects.create(user=user, author=author)
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @subscribe.mapping.delete
     def unsubscribe(self, request, **kwargs):
-        user = request.user
         author = get_object_or_404(User, id=kwargs.get('id'))
-        get_object_or_404(Follow.objects.filter(user=user,
+        get_object_or_404(Follow.objects.filter(user=request.user,
                                                 author=author)).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
 

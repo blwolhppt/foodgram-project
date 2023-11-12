@@ -3,7 +3,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator
 from djoser.serializers import UserSerializer
-from rest_framework import serializers
+from rest_framework import serializers, status
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (SerializerMethodField, IntegerField,
                                    ImageField, ReadOnlyField)
@@ -185,8 +185,18 @@ class FollowSerializer(UserSerializer):
 
     class Meta:
         model = Follow
-        fields = ('id', 'email', 'username', 'first_name', 'last_name',
+        fields = ('id', 'user', 'author',
                   'is_subscribed', 'recipes', 'recipes_count')
+
+    def validate(self, data):
+        instance = self.instance
+        user = instance.user
+        author = instance.author
+        if Follow.objects.filter(author=author, user=user).exists():
+            raise ValidationError('Уже есть такая подписка')
+        if user == author:
+            raise ValidationError('Нельзя подписаться на самого себя!')
+        return data
 
     def get_is_subscribed(self, request):
         return Follow.objects.filter(user=request.user,
