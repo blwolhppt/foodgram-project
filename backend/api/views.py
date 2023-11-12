@@ -70,7 +70,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if (not Recipe.objects.filter(id=pk).exists()
                 or FavoriteRecipe.objects.filter(user=request.user,
                                                  recipe_id=pk).exists()):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.FavoriteRecipeSerializer(
             FavoriteRecipe.objects.create(user=request.user, recipe_id=pk),
             context={'request': request})
@@ -88,7 +88,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         if (not Recipe.objects.filter(id=pk).exists()
                 or ListProducts.objects.filter(user=request.user,
                                                recipe_id=pk).exists()):
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(status=status.HTTP_404_NOT_FOUND)
         serializer = serializers.FavoriteRecipeSerializer(
             ListProducts.objects.create(user=request.user, recipe_id=pk),
             context={'request': request})
