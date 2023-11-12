@@ -8,6 +8,7 @@ from rest_framework.response import Response
 
 from .models import User, Follow
 from .serializers import CustomUserSerializer
+
 from api import serializers
 
 
@@ -25,18 +26,12 @@ class CustomUserViewSet(UserViewSet):
 
     @action(
         detail=True,
-        methods=('POST', 'DELETE',),
+        methods=('POST',),
         permission_classes=(IsAuthenticated,)
     )
     def subscribe(self, request, **kwargs):
         user = request.user
         author = get_object_or_404(User, id=kwargs.get('id'))
-        if request.method == 'POST':
-            return self.subscribe_to_author(user, author)
-        if request.method == 'DELETE':
-            return self.unsubscribe_to_author(user, author)
-
-    def subscribe_to_author(self, user, author):
         if user == author or Follow.objects.filter(user=user,
                                                    author=author).exists():
             return Response(status=status.HTTP_400_BAD_REQUEST)
@@ -44,12 +39,14 @@ class CustomUserViewSet(UserViewSet):
             user=user, author=author), context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
-    def unsubscribe_to_author(self, user, author):
-        if Follow.objects.filter(user=user, author=author).exists():
-            Follow.objects.filter(user=user, author=author).delete()
-            return Response(status=status.HTTP_204_NO_CONTENT)
+    @subscribe.mapping.delete
+    def unsubscribe(self, request, **kwargs):
+        user = request.user
+        author = get_object_or_404(User, id=kwargs.get('id'))
+        get_object_or_404(Follow.objects.filter(user=user,
+                                                author=author)).delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
-        return Response(status=status.HTTP_400_BAD_REQUEST)
 
     @action(
         detail=False,
