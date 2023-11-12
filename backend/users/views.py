@@ -32,9 +32,6 @@ class CustomUserViewSet(UserViewSet):
     def subscribe(self, request, **kwargs):
         user = request.user
         author = get_object_or_404(User, id=kwargs.get('id'))
-        if user == author or Follow.objects.filter(user=user,
-                                                   author=author).exists():
-            return Response(status=status.HTTP_400_BAD_REQUEST)
         serializer = serializers.FollowSerializer(Follow.objects.create(
             user=user, author=author), context={'request': self.request})
         return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -46,7 +43,6 @@ class CustomUserViewSet(UserViewSet):
         get_object_or_404(Follow.objects.filter(user=user,
                                                 author=author)).delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
-
 
     @action(
         detail=False,

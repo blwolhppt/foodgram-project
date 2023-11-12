@@ -9,8 +9,8 @@ class RecipeFilter(FilterSet):
                                                     to_field_name='slug',
                                                     queryset=Tag.objects.all())
 
-    is_favorited = filters.BooleanFilter(method='favorited')
-    is_in_shopping_cart = filters.BooleanFilter(method='in_shopping_cart')
+    is_favorited = filters.NumberFilter(method='favorited')
+    is_in_shopping_cart = filters.NumberFilter(method='in_shopping_cart')
 
     class Meta:
         model = Recipe
@@ -25,5 +25,5 @@ class RecipeFilter(FilterSet):
     def in_shopping_cart(self, queryset, name, value):
         request = self.request
         if value and request.user.is_authenticated:
-            return queryset.filter(listproducts__user=request.user).distinct()
+            return queryset.filter(listproducts__user=request.user)
         return queryset
