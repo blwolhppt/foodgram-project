@@ -3,7 +3,7 @@ import base64
 from django.core.files.base import ContentFile
 from django.core.validators import MinValueValidator, MaxValueValidator
 from djoser.serializers import UserSerializer
-from rest_framework import serializers, status
+from rest_framework import serializers
 from rest_framework.exceptions import ValidationError
 from rest_framework.fields import (SerializerMethodField, IntegerField,
                                    ImageField, ReadOnlyField)
