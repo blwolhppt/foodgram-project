@@ -11,11 +11,10 @@ from rest_framework.relations import PrimaryKeyRelatedField
 
 from recipes.models import (Ingredient, Tag, Recipe, IngredientsInRecipe,
                             FavoriteRecipe, ListProducts)
+from recipes.constants import (MAX_COOKING_TIME, MIN_AMMOUNT_INGREDIENTS,
+                               MIN_COOKING_TIME)
 from users.models import Follow
 from users.serializers import CustomUserSerializer
-
-from recipes.constants import (MIN_AMMOUNT_INGREDIENTS, MIN_COOKING_TIME,
-                               MAX_COOKING_TIME)
 
 
 class TagSerializer(serializers.ModelSerializer):
