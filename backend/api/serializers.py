@@ -249,4 +249,19 @@ class FavoriteRecipeSerializer(serializers.ModelSerializer):
         return data
 
 
+class ListProductsSerializer(serializers.ModelSerializer):
+    name = ReadOnlyField(source='recipe.name')
+    image = Base64ImageField(source='recipe.image', read_only=True)
+    cooking_time = ReadOnlyField(source='recipe.cooking_time')
 
+    class Meta:
+        model = FavoriteRecipe
+        fields = ('id', 'name', 'image', 'cooking_time')
+
+    def validate(self, data):
+        instance = self.instance
+        recipe = instance.recipe.id
+        user = instance.user
+        if ListProducts.objects.filter(user=user, recipe_id=recipe).exists():
+            raise ValidationError('Рецепт уже есть в ListProducts')
+        return data

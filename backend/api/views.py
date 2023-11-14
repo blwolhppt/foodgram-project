@@ -86,13 +86,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return self.add_shopping_cart(request, pk)
 
     def add_shopping_cart(self, request, pk):
-        if (not Recipe.objects.filter(id=pk).exists()
-                or ListProducts.objects.filter(user=request.user,
-                                               recipe_id=pk).exists()):
-            return Response(status=status.HTTP_404_NOT_FOUND)
-        serializer = serializers.FavoriteRecipeSerializer(
-            ListProducts.objects.create(user=request.user, recipe_id=pk),
+        recipe = get_object_or_404(Recipe, id=pk)
+        recipe_instance = ListProducts(user=request.user, recipe=recipe)
+        serializer = serializers.ListProductsSerializer(
+            instance=recipe_instance,
+            data=request.data,
             context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @shopping_cart.mapping.delete
