@@ -263,5 +263,5 @@ class ListProductsSerializer(serializers.ModelSerializer):
         recipe = instance.recipe.id
         user = instance.user
         if ListProducts.objects.filter(user=user, recipe_id=recipe).exists():
-            raise ValidationError('Рецепт уже есть в ListProducts')
+            raise ValidationError('Рецепт уже есть в корзине')
         return data
