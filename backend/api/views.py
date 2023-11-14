@@ -67,13 +67,14 @@ class RecipeViewSet(viewsets.ModelViewSet):
         return Response(status=status.HTTP_204_NO_CONTENT)
 
     def add_favorite(self, request, pk):
-        if (not Recipe.objects.filter(id=pk).exists()
-                or FavoriteRecipe.objects.filter(user=request.user,
-                                                 recipe_id=pk).exists()):
-            return Response(status=status.HTTP_404_NOT_FOUND)
+        recipe = get_object_or_404(Recipe, id=pk)
+        recipe_instance = FavoriteRecipe(user=request.user, recipe=recipe)
         serializer = serializers.FavoriteRecipeSerializer(
-            FavoriteRecipe.objects.create(user=request.user, recipe_id=pk),
+            instance=recipe_instance,
+            data=request.data,
             context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 
     @action(
@@ -110,7 +111,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = (Recipe.objects.filter(
             listproducts__user=request.user).values(
             'ingredients__name', 'ingredients__measurement_unit')
-            .order_by("ingredient__name"))
+                       .order_by("ingredient__name"))
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; filename="'
