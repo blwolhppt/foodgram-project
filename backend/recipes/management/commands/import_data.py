@@ -7,9 +7,8 @@ from recipes.models import Ingredient
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        csv_file = open('C:/Users/blwol/PycharmProjects/foodgram-project'
-                        '-react/backend/recipes/management/commands'
-                        '/ingredients.csv', encoding='utf-8')
+        csv_file = open('/app/recipes/management/commands/ingredients.csv',
+                        encoding='utf-8')
         reader = csv.reader(csv_file, delimiter=',')
         next(reader, None)
         list_ingredients = []
@@ -17,6 +16,6 @@ class Command(BaseCommand):
             name, meashurement_unit = row
             list_ingredients.append(Ingredient(
                 name=name,
-                meashurement_unit=meashurement_unit))
+                measurement_unit=meashurement_unit))
         Ingredient.objects.bulk_create(list_ingredients)
         print('Ингредиенты +')
