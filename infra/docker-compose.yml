@@ -4,8 +4,6 @@ volumes:
   pg_data:
   static:
   media:
-  backend_static:
-  backend_media:
 
 services:
 
@@ -14,15 +12,13 @@ services:
     env_file: .env
     volumes:
       - pg_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
 
   backend:
     build: ../backend/
     env_file: .env
     volumes:
-      - backend_static:/app/static/
-      - backend_media:/app/media/
+      - static:/app/static/
+      - media:/app/media/
     depends_on:
       - db
 
