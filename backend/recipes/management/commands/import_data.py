@@ -2,7 +2,7 @@ import csv
 
 from django.core.management.base import BaseCommand
 
-from recipes.models import Ingredient
+from recipes.models import Ingredient, Tag
 
 
 class Command(BaseCommand):
@@ -19,3 +19,4 @@ class Command(BaseCommand):
                 measurement_unit=meashurement_unit))
         Ingredient.objects.bulk_create(list_ingredients)
         print('Ингредиенты +')
+
