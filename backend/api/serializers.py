@@ -32,7 +32,7 @@ class IngredientSerializer(serializers.ModelSerializer):
 class IngredientsInRecipeSerializer(serializers.ModelSerializer):
     id = IntegerField(write_only=True)
     amount = IntegerField(validators=[MinValueValidator(1),
-                                      MaxValueValidator(50)])
+                                      MaxValueValidator(500)])
 
     class Meta:
         model = IngredientsInRecipe

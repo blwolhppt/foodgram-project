@@ -1,6 +1,8 @@
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
 from rest_framework.pagination import LimitOffsetPagination
@@ -109,10 +111,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         permission_classes=(IsAuthenticated,),
     )
     def download_shopping_cart(self, request):
-        ingredients = (Recipe.objects.filter(
-            listproducts__user=request.user).values(
-            'ingredients__name', 'ingredients__measurement_unit')
-            .order_by("ingredient__name"))
+        pdfmetrics.registerFont(TTFont('Arial', '/app/recipes/management/'
+                                                'ArialRegular.ttf'))
+
+        ingredients = (
+            Recipe.objects.filter(
+                listproducts__user=request.user
+            ).values('ingredients__name').order_by("ingredients__name"))
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; filename="'
@@ -120,15 +125,15 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         pdf = canvas.Canvas(response)
 
-        pdf.drawString('Что купить:')
+        pdf.setFont("Arial", 12)
+
+        pdf.drawString(100, 100, 'Что купить:')
 
         y_position = 780
 
         for ing in ingredients:
-            ingredient_text = (f'{ing["ingredients__name"]} '
-                               f'({ing["ingredients__measurement_unit"]})')
-            pdf.drawString(100, y_position, ingredient_text.encode(
-                'utf-8').decode('latin-1'))
+            ingredient_text = f'- {ing["ingredients__name"]}'
+            pdf.drawString(100, y_position, ingredient_text)
             y_position -= 20
 
         pdf.showPage()
