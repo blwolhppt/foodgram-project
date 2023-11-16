@@ -154,17 +154,18 @@ class NewRecipeSerializer(serializers.ModelSerializer):
         ingredients_data = validated_data.get('ingredients')
         validated_data.pop('tags', None)
         validated_data.pop('ingredients', None)
+        IngredientsInRecipe.objects.filter(recipe=recipe).delete()
+
         recipe = super().update(recipe, validated_data)
         recipe.tags.set(tags_data)
-        ingredients_in_recipe = []
+
         for item in ingredients_data:
             ingredient = Ingredient.objects.get(id=item['id'])
             amount = item['amount']
-            ingredients_in_recipe.append(
-                IngredientsInRecipe(recipe=recipe, ingredients=ingredient,
-                                    amount=amount))
-        IngredientsInRecipe.objects.bulk_create(ingredients_in_recipe)
+            IngredientsInRecipe.objects.create(
+                recipe=recipe, ingredients=ingredient, amount=amount)
         return recipe
+
 
     def to_representation(self, instance):
         return RecipeSerializer(instance, context=self.context).data
