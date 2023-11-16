@@ -7,7 +7,7 @@ from recipes.models import Tag
 
 class Command(BaseCommand):
     def handle(self, *args, **options):
-        csv_file2 = open('/app/recipes/management/commands/tags.csv',
+        csv_file2 = open('/app/recipes/management/commands/tag.csv',
                          encoding='utf-8')
         reader = csv.reader(csv_file2, delimiter=',')
         next(reader, None)
