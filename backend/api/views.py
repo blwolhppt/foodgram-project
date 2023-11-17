@@ -127,8 +127,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         pdf.setFont("Arial", 12)
 
-        pdf.drawString(100, 100, 'Что купить:')
-
         y_position = 780
 
         for ing in ingredients:
