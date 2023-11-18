@@ -1,3 +1,4 @@
+from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -117,7 +118,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         ingredients = (
             Recipe.objects.filter(
                 listproducts__user=request.user
-            ).values('ingredients__name').order_by("ingredients__name"))
+            ).values('ingredients__name', 'ingredients__measurement_unit')
+            .annotate(total_amount=Sum("amount"))
+            .order_by("ingredients__name"))
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; filename="'
@@ -130,7 +133,9 @@ class RecipeViewSet(viewsets.ModelViewSet):
         y_position = 780
 
         for ing in ingredients:
-            ingredient_text = f'- {ing["ingredients__name"]}'
+            ingredient_text = (f'- {ing["ingredients__name"]},'
+                               f'  {ing["ingredients__measurement_unit"]} '
+                               f'  {ing["total_amount"]}')
             pdf.drawString(100, y_position, ingredient_text)
             y_position -= 20
 

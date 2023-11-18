@@ -3,7 +3,7 @@
 
 ## Ссылка на соцсеть: http://foodgramblwol.ddns.net/recipes/
 
-#### Технологии:
+## Технологии:
 
 - Python 3.9
 - Django
@@ -31,4 +31,4 @@ sudo docker compose -f docker-compose.production.yml exec backend python manage.
 sudo docker compose -f docker-compose.production.yml exec backend cp -r /app/collected_static/. /static/static/
 ```
 
-## Автор проекта: Белова Ольга
+### Автор проекта: Белова Ольга
