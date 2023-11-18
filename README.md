@@ -1,4 +1,4 @@
-![example workflow](https://github.com/github/docs/actions/workflows/main.yml/badge.svg)
+![foodgram-project-react Workflow Status](https://github.com/blwolhppt/foodgram-project-react/actions/workflows/main.yml/badge.svg?branch=master&event=push)
 # Foodgram 
 
 ## Описание проекта:
