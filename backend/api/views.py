@@ -119,7 +119,6 @@ class RecipeViewSet(viewsets.ModelViewSet):
             Recipe.objects.filter(
                 listproducts__user=request.user
             ).values('ingredients__name', 'ingredients__measurement_unit')
-            .annotate(total_amount=Sum("amount"))
             .order_by("ingredients__name"))
 
         response = HttpResponse(content_type='application/pdf')
@@ -134,8 +133,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
 
         for ing in ingredients:
             ingredient_text = (f'- {ing["ingredients__name"]},'
-                               f'  {ing["ingredients__measurement_unit"]} '
-                               f'  {ing["total_amount"]}')
+                               f'  {ing["ingredients__measurement_unit"]} ')
             pdf.drawString(100, y_position, ingredient_text)
             y_position -= 20
 
