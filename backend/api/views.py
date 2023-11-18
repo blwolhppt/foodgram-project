@@ -5,8 +5,7 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination, \
-    PageNumberPagination
+from rest_framework.pagination import PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
@@ -49,7 +48,7 @@ class RecipeViewSet(viewsets.ModelViewSet):
     http_method_names = ['get', 'post', 'delete', 'patch']
 
     def get(self, request):
-        queryset =Recipe.objects.all()
+        queryset = Recipe.objects.all()
         page = self.paginate_queryset(queryset)
 
         if page is not None:
