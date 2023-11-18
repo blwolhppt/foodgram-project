@@ -166,7 +166,6 @@ class NewRecipeSerializer(serializers.ModelSerializer):
                 recipe=recipe, ingredients=ingredient, amount=amount)
         return recipe
 
-
     def to_representation(self, instance):
         return RecipeSerializer(instance, context=self.context).data
 
