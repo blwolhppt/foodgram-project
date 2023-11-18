@@ -1,4 +1,3 @@
-from django.db.models import Sum
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
@@ -6,7 +5,8 @@ from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 from rest_framework import viewsets, status, filters
 from rest_framework.decorators import action
-from rest_framework.pagination import LimitOffsetPagination
+from rest_framework.pagination import LimitOffsetPagination, \
+    PageNumberPagination
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from reportlab.pdfgen import canvas
@@ -41,12 +41,23 @@ class TagViewSet(viewsets.ReadOnlyModelViewSet):
 
 class RecipeViewSet(viewsets.ModelViewSet):
     queryset = Recipe.objects.all()
-    pagination_class = LimitOffsetPagination
+    pagination_class = PageNumberPagination
     permission_classes = (permissions.IsAuthenticatedAuthorOrReadOnly,)
     filter_backends = [DjangoFilterBackend]
     filterset_class = RecipeFilter
 
     http_method_names = ['get', 'post', 'delete', 'patch']
+
+    def get(self, request):
+        queryset =Recipe.objects.all()
+        page = self.paginate_queryset(queryset)
+
+        if page is not None:
+            serializer = serializers.RecipeSerializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+
+        serializer = serializers.RecipeSerializer(queryset, many=True)
+        return Response(serializer.data)
 
     def perform_create(self, serializer):
         serializer.save(author=self.request.user)
@@ -115,11 +126,13 @@ class RecipeViewSet(viewsets.ModelViewSet):
         pdfmetrics.registerFont(TTFont('Arial', '/app/recipes/management/'
                                                 'ArialRegular.ttf'))
 
-        ingredients = (
-            Recipe.objects.filter(
-                listproducts__user=request.user
-            ).values('ingredients__name', 'ingredients__measurement_unit')
-            .order_by("ingredients__name"))
+        ingredients = Recipe.objects.filter(
+            listproducts__user=request.user
+        ).values(
+            'ingredients__name',
+            'ingredients__measurement_unit',
+            'ingredientsinrecipe__amount'
+        ).order_by("ingredients__name")
 
         response = HttpResponse(content_type='application/pdf')
         response['Content-Disposition'] = ('attachment; filename="'
@@ -132,8 +145,11 @@ class RecipeViewSet(viewsets.ModelViewSet):
         y_position = 780
 
         for ing in ingredients:
-            ingredient_text = (f'- {ing["ingredients__name"]},'
-                               f'  {ing["ingredients__measurement_unit"]} ')
+            ingredient_text = (
+                f'- {ing["ingredients__name"]}, '
+                f'{ing["ingredientsinrecipe__amount"]}'
+                f'{ing["ingredients__measurement_unit"]} '
+            )
             pdf.drawString(100, y_position, ingredient_text)
             y_position -= 20
 
