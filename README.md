@@ -15,7 +15,7 @@
 ## Запуск проекта:
 - Клонируем репозиторий:
 ```angular2html
-git clone git@github.com:blwolhppt/kittygram_final.git
+git clone git@github.com:blwolhppt/foodgram-project-react.git
 ```
 - Запускаем:
 ```angular2html
