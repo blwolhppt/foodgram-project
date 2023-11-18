@@ -8,7 +8,7 @@ SECRET_KEY = os.getenv('SECRET_KEY', default=' ')
 
 DEBUG = True
 
-ALLOWED_HOSTS = ['localhost', '127.0.0.1']
+ALLOWED_HOSTS = ['localhost', '127.0.0.1', 'foodgramblwol.ddns.net']
 
 INSTALLED_APPS = [
     'api.apps.ApiConfig',
